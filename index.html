@@ -309,12 +309,13 @@ document.getElementById('yr').textContent=new Date().getFullYear();
 const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target)}}),{threshold:.1});
 document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
 
-// ---- visit tracking ----
-const NS='mfsoft-demos', SITE='karachiparatha';
+// ---- visit tracking (ntfy.sh) ----
+const TOPIC='mfsoft-demos-f7e46c94d0', SITE='Karachi Paratha';
 const isOwner=(()=>{try{return localStorage.getItem('mfsoft-owner')==='1'}catch(e){return false}})();
-function hit(key){ if(isOwner) return; const k=SITE+'-'+key;
-  try{ fetch('https://abacus.jasoncameron.dev/hit/'+NS+'/'+k,{mode:'cors',keepalive:true}).catch(()=>{}); }catch(e){}
-  try{ fetch('https://api.counterapi.dev/v1/'+NS+'/'+k+'/up',{mode:'cors',keepalive:true}).catch(()=>{}); }catch(e){} }
+const DEV=/Mobi|Android|iPhone/i.test(navigator.userAgent)?'phone':'computer';
+function hit(key){ if(isOwner) return;
+  const L={views:'👀 website kholi',cart:'🛒 order cart khola',contact:'📞 WhatsApp/Call dabaya',order:'✅ order bheja'};
+  try{ fetch('https://ntfy.sh/'+TOPIC,{method:'POST',body:SITE+' | '+key+' | '+(L[key]||key)+' | '+DEV,keepalive:true}).catch(()=>{}); }catch(e){} }
 function track(ev){
   if(ev.endsWith('open-cart')) hit('cart'); else if(ev.endsWith('send-order')) hit('order');
   try{ window.goatcounter && window.goatcounter.count && window.goatcounter.count({path:ev,title:ev,event:true}); }catch(e){}
