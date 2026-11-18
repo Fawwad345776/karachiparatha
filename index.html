@@ -309,8 +309,16 @@ document.getElementById('yr').textContent=new Date().getFullYear();
 const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target)}}),{threshold:.1});
 document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
 
-// ---- visit tracking (GoatCounter) ----
-function track(ev){ try{ window.goatcounter && window.goatcounter.count && window.goatcounter.count({path:ev,title:ev,event:true}); }catch(e){} }
+// ---- visit tracking ----
+const NS='mfsoft-demos', SITE='karachiparatha';
+const isOwner=(()=>{try{return localStorage.getItem('mfsoft-owner')==='1'}catch(e){return false}})();
+function hit(key){ if(isOwner) return; try{ fetch('https://api.counterapi.dev/v1/'+NS+'/'+SITE+'-'+key+'/up',{mode:'cors',keepalive:true}).catch(()=>{}); }catch(e){} }
+function track(ev){
+  if(ev.endsWith('open-cart')) hit('cart'); else if(ev.endsWith('send-order')) hit('order');
+  try{ window.goatcounter && window.goatcounter.count && window.goatcounter.count({path:ev,title:ev,event:true}); }catch(e){}
+}
+try{ if(!sessionStorage.getItem('kp-seen')){ sessionStorage.setItem('kp-seen','1'); hit('views'); } }catch(e){ hit('views'); }
+document.querySelectorAll('a[href*="wa.me"],a[href^="tel:"]').forEach(a=>a.addEventListener('click',()=>hit('contact')));
 </script>
 <!-- GoatCounter: free, privacy-friendly visit counter. Dashboard: https://mfsoft.goatcounter.com -->
 <script data-goatcounter="https://mfsoft.goatcounter.com/count" async src="https://gc.zgo.at/count.js"></script>

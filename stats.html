@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex,nofollow">
+<title>MF Soft – Demo Stats</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:Poppins,system-ui,sans-serif;background:#0f1222;color:#eef0ff;min-height:100vh;padding:20px 16px 40px}
+  .wrap{max-width:720px;margin:0 auto}
+  h1{font-size:1.6rem;font-weight:800}
+  .sub{color:#9aa0c3;font-size:.9rem;margin:4px 0 16px}
+  .own{background:#14361f;border:1px solid #2c7a45;color:#9ef0b8;border-radius:12px;padding:10px 14px;font-size:.85rem;margin-bottom:16px}
+  .card{background:#181c33;border:1px solid #2a2f52;border-radius:18px;padding:18px;margin-bottom:14px}
+  .top{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:12px}
+  .top h2{font-size:1.15rem;font-weight:700}
+  .top a{color:#8fb3ff;font-size:.82rem;text-decoration:none}
+  .grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+  .m{background:#0f1222;border-radius:14px;padding:12px;text-align:center}
+  .m b{display:block;font-size:1.8rem;font-weight:800;line-height:1.1}
+  .m span{color:#9aa0c3;font-size:.75rem}
+  .m.v b{color:#ffd400} .m.c b{color:#7fd1ff} .m.o b{color:#4dff8a} .m.t b{color:#ff9ad5}
+  .st{margin-top:10px;font-size:.85rem;color:#c9cdf0}
+  .st.yes{color:#4dff8a;font-weight:700} .st.no{color:#9aa0c3}
+  .last{font-size:.75rem;color:#7d83a8;margin-top:4px}
+  button{margin-top:6px;width:100%;padding:13px;border-radius:14px;border:none;background:#ffd400;color:#0f1222;font-weight:800;font-family:inherit;font-size:1rem;cursor:pointer}
+  .err{color:#ff8a8a;font-size:.82rem;margin-top:8px}
+  @media(max-width:480px){.grid{grid-template-columns:1fr 1fr}}
+</style>
+</head>
+<body><div class="wrap">
+  <h1>📊 Demo Stats</h1>
+  <p class="sub">Kis restaurant ne website kholi — MF Soft</p>
+  <div class="own">✅ Ye phone "owner" mark ho gaya hai — is phone se kholi gayi demo sites ab views mein <b>nahi</b> ginengi.</div>
+  <div id="list"></div>
+  <button id="ref">🔄 Refresh</button>
+  <p class="sub" style="margin-top:14px">Views = website kitni dafa kholi gayi · Cart = order cart khola · Contact = WhatsApp/Call button dabaya · Orders = "Send order" dabaya. Har 30 second mein khud refresh hota hai.</p>
+</div>
+<script>
+try{ localStorage.setItem('mfsoft-owner','1'); }catch(e){}
+const NS='mfsoft-demos';
+const SITES=[
+  {key:'karachiparatha', name:'Karachi Paratha – Salmiya', url:'https://fawwad345776.github.io/karachiparatha/'}
+];
+const METRICS=[['views','Views','v'],['cart','Cart','c'],['contact','Contact','t'],['order','Orders','o']];
+async function get(k){
+  try{ const r=await fetch('https://api.counterapi.dev/v1/'+NS+'/'+k+'/',{cache:'no-store'}); if(!r.ok) return {count:0}; const j=await r.json(); return j; }
+  catch(e){ return {count:0,err:true}; }
+}
+function ago(t){ if(!t) return ''; const d=new Date(t); if(isNaN(d)) return ''; const s=(Date.now()-d)/1000;
+  if(s<60) return 'abhi abhi'; if(s<3600) return Math.floor(s/60)+' min pehle'; if(s<86400) return Math.floor(s/3600)+' ghante pehle'; return Math.floor(s/86400)+' din pehle'; }
+async function load(){
+  const html=await Promise.all(SITES.map(async s=>{
+    const vals=await Promise.all(METRICS.map(m=>get(s.key+'-'+m[0])));
+    const views=vals[0].count||0, err=vals.some(v=>v.err);
+    const last=vals[0].updated_at||vals[0].updatedAt||'';
+    return `<div class="card"><div class="top"><h2>${s.name}</h2><a href="${s.url}" target="_blank" rel="noopener">site ↗</a></div>
+      <div class="grid">${METRICS.map((m,i)=>`<div class="m ${m[2]}"><b>${vals[i].count||0}</b><span>${m[1]}</span></div>`).join('')}</div>
+      <div class="st ${views?'yes':'no'}">${views?'👀 Restaurant ne website kholi hai!':'⏳ Abhi tak kisi ne nahi kholi'}</div>
+      ${last&&views?`<div class="last">Aakhri visit: ${ago(last)}</div>`:''}
+      ${err?'<div class="err">Counter se raabta nahi ho saka — internet check karein aur Refresh dabayen.</div>':''}</div>`;
+  }));
+  document.getElementById('list').innerHTML=html.join('');
+}
+document.getElementById('ref').onclick=load; load(); setInterval(load,30000);
+</script>
+</body>
+</html>
