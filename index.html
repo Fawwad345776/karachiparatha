@@ -313,14 +313,21 @@ document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
 const TOPIC='mfsoft-demos-f7e46c94d0', SITE='Karachi Paratha';
 const isOwner=(()=>{try{return localStorage.getItem('mfsoft-owner')==='1'}catch(e){return false}})();
 const DEV=/Mobi|Android|iPhone/i.test(navigator.userAgent)?'phone':'computer';
-function hit(key){ if(isOwner) return;
+const TEST=/[?&]test/.test(location.search);
+function banner(msg,ok){ let b=document.getElementById('tbanner'); if(!b){ b=document.createElement('div'); b.id='tbanner';
+  b.style.cssText='position:fixed;top:70px;left:10px;right:10px;z-index:99;padding:14px;border-radius:14px;font:600 15px Poppins,sans-serif;border:3px solid #1a1530;box-shadow:4px 4px 0 #1a1530'; document.body.appendChild(b); }
+  b.style.background=ok?'#b8ffcf':'#ffc2c2'; b.textContent=msg; }
+function hit(key){ if(isOwner && !TEST) return;
   const L={views:'👀 website kholi',cart:'🛒 order cart khola',contact:'📞 WhatsApp/Call dabaya',order:'✅ order bheja'};
-  try{ fetch('https://ntfy.sh/'+TOPIC,{method:'POST',body:SITE+' | '+key+' | '+(L[key]||key)+' | '+DEV,keepalive:true}).catch(()=>{}); }catch(e){} }
+  const p=fetch('https://ntfy.sh/'+TOPIC,{method:'POST',body:SITE+' | '+key+' | '+(L[key]||key)+' | '+DEV+(TEST?' (test)':''),keepalive:true});
+  if(TEST) banner('⏳ Test: visit bhej raha hoon…',true);
+  p.then(r=>{ if(TEST) banner(r.ok?'✅ Test kamyab: "'+key+'" record ho gaya (status '+r.status+'). Ab stats page Refresh karein.':'❌ ntfy ne mana kiya: status '+r.status,r.ok); })
+   .catch(e=>{ if(TEST) banner('❌ ntfy tak nahi pohncha: '+e+' — ad-blocker / Brave / data saver check karein',false); }); }
 function track(ev){
   if(ev.endsWith('open-cart')) hit('cart'); else if(ev.endsWith('send-order')) hit('order');
   try{ window.goatcounter && window.goatcounter.count && window.goatcounter.count({path:ev,title:ev,event:true}); }catch(e){}
 }
-try{ if(!sessionStorage.getItem('kp-seen')){ sessionStorage.setItem('kp-seen','1'); hit('views'); } }catch(e){ hit('views'); }
+try{ if(TEST||!sessionStorage.getItem('kp-seen')){ sessionStorage.setItem('kp-seen','1'); hit('views'); } }catch(e){ hit('views'); }
 document.querySelectorAll('a[href*="wa.me"],a[href^="tel:"]').forEach(a=>a.addEventListener('click',()=>hit('contact')));
 </script>
 <!-- GoatCounter: free, privacy-friendly visit counter. Dashboard: https://mfsoft.goatcounter.com -->
