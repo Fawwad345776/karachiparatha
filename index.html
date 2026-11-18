@@ -312,7 +312,9 @@ document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
 // ---- visit tracking ----
 const NS='mfsoft-demos', SITE='karachiparatha';
 const isOwner=(()=>{try{return localStorage.getItem('mfsoft-owner')==='1'}catch(e){return false}})();
-function hit(key){ if(isOwner) return; try{ fetch('https://api.counterapi.dev/v1/'+NS+'/'+SITE+'-'+key+'/up',{mode:'cors',keepalive:true}).catch(()=>{}); }catch(e){} }
+function hit(key){ if(isOwner) return; const k=SITE+'-'+key;
+  try{ fetch('https://abacus.jasoncameron.dev/hit/'+NS+'/'+k,{mode:'cors',keepalive:true}).catch(()=>{}); }catch(e){}
+  try{ fetch('https://api.counterapi.dev/v1/'+NS+'/'+k+'/up',{mode:'cors',keepalive:true}).catch(()=>{}); }catch(e){} }
 function track(ev){
   if(ev.endsWith('open-cart')) hit('cart'); else if(ev.endsWith('send-order')) hit('order');
   try{ window.goatcounter && window.goatcounter.count && window.goatcounter.count({path:ev,title:ev,event:true}); }catch(e){}

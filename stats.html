@@ -36,6 +36,7 @@
   <div class="own">✅ Ye phone "owner" mark ho gaya hai — is phone se kholi gayi demo sites ab views mein <b>nahi</b> ginengi.</div>
   <div id="list"></div>
   <button id="ref">🔄 Refresh</button>
+  <div class="card" style="margin-top:14px;font-size:.8rem;color:#c9cdf0"><b>🔧 Diagnostic</b><div id="diag" style="display:grid;gap:8px;margin-top:8px;word-break:break-all"></div></div>
   <p class="sub" style="margin-top:14px">Views = website kitni dafa kholi gayi · Cart = order cart khola · Contact = WhatsApp/Call button dabaya · Orders = "Send order" dabaya. Har 30 second mein khud refresh hota hai.</p>
 </div>
 <script>
@@ -45,9 +46,15 @@ const SITES=[
   {key:'karachiparatha', name:'Karachi Paratha – Salmiya', url:'https://fawwad345776.github.io/karachiparatha/'}
 ];
 const METRICS=[['views','Views','v'],['cart','Cart','c'],['contact','Contact','t'],['order','Orders','o']];
+const DIAG={};
+async function one(url,pick){ try{ const r=await fetch(url,{cache:'no-store'}); const txt=await r.text(); let j={}; try{j=JSON.parse(txt)}catch(e){}
+    return {ok:r.ok,status:r.status,count:pick(j)||0,raw:txt.slice(0,120),j}; }catch(e){ return {ok:false,status:'network',count:0,raw:String(e)}; } }
 async function get(k){
-  try{ const r=await fetch('https://api.counterapi.dev/v1/'+NS+'/'+k+'/',{cache:'no-store'}); if(!r.ok) return {count:0}; const j=await r.json(); return j; }
-  catch(e){ return {count:0,err:true}; }
+  const [a,c]=await Promise.all([
+    one('https://abacus.jasoncameron.dev/get/'+NS+'/'+k, j=>j.value),
+    one('https://api.counterapi.dev/v1/'+NS+'/'+k+'/', j=>j.count)]);
+  DIAG[k]={abacus:a,counterapi:c};
+  return {count:Math.max(a.count,c.count), err:!a.ok&&!c.ok&&a.status!==404&&c.status!==404, updated_at:(c.j&&(c.j.updated_at||c.j.updatedAt))||''};
 }
 function ago(t){ if(!t) return ''; const d=new Date(t); if(isNaN(d)) return ''; const s=(Date.now()-d)/1000;
   if(s<60) return 'abhi abhi'; if(s<3600) return Math.floor(s/60)+' min pehle'; if(s<86400) return Math.floor(s/3600)+' ghante pehle'; return Math.floor(s/86400)+' din pehle'; }
@@ -63,6 +70,9 @@ async function load(){
       ${err?'<div class="err">Counter se raabta nahi ho saka — internet check karein aur Refresh dabayen.</div>':''}</div>`;
   }));
   document.getElementById('list').innerHTML=html.join('');
+  const d=DIAG['karachiparatha-views']||{};
+  const line=(n,x)=>x?`<div><b>${n}:</b> ${x.ok?'✅ chal raha hai':(x.status===404?'✅ chal raha hai (abhi 0)':'❌ kaam nahi kar raha')} · status ${x.status} · count ${x.count}<br><small>${(x.raw||'').replace(/</g,'&lt;')}</small></div>`:'';
+  document.getElementById('diag').innerHTML=line('Abacus',d.abacus)+line('CounterAPI',d.counterapi);
 }
 document.getElementById('ref').onclick=load; load(); setInterval(load,30000);
 </script>
