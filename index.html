@@ -4,9 +4,9 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Karachi Paratha – Salmiya | Karachi Street Food in Kuwait</title>
-<meta name="description" content="Karachi Paratha, Street 3, Salmiya — paratha rolls, malai boti, chicken cheese paratha, kababs & loaded fries. Karachi wala street food in Kuwait. Order on WhatsApp +965 4144 4984.">
+<meta name="description" content="Karachi Paratha, Street 3, Salmiya — paratha rolls, malai boti, chicken cheese paratha, kababs & loaded fries. Karachi street food in Kuwait. Order on WhatsApp +965 4144 4984.">
 <meta property="og:title" content="Karachi Paratha – Salmiya">
-<meta property="og:description" content="Karachi wala street food · Paratha rolls · Order on WhatsApp">
+<meta property="og:description" content="Karachi street food · Paratha rolls · Order on WhatsApp">
 <meta property="og:image" content="https://fawwad345776.github.io/karachiparatha/preview.jpg">
 <meta property="og:image:width" content="1200"><meta property="og:image:height" content="630">
 <meta property="og:url" content="https://fawwad345776.github.io/karachiparatha/">
@@ -154,8 +154,8 @@
   <div class="wrap">
     <div>
       <span class="live"><span class="dot" id="dot"></span><span id="live">Open from 2 PM</span></span>
-      <div class="ur">کراچی والا ذائقہ، اب سالمیہ میں</div>
-      <h1>Karachi wala<br><span>Paratha Roll</span></h1>
+      <div class="ur" style="direction:rtl;text-align:left;font-family:Poppins,sans-serif;font-weight:700;line-height:1.6">طعم كراتشي الأصلي — الآن في السالمية</div>
+      <h1>Karachi Style<br><span>Paratha Rolls</span></h1>
       <p>Crispy-soft parathas loaded with malai boti, chicken cheese and beef kabab — the real taste of Karachi’s street food, right here in Salmiya.</p>
       <div class="ctas">
         <a href="#menu" class="btn btn-pink">🌯 Order Now</a>
@@ -192,8 +192,8 @@
 
 <section>
   <div class="wrap">
-    <span class="tag">Customer favourites</span>
-    <h2 class="title reveal">Jo sab mangwate hain</h2>
+    <span class="tag">Must try</span>
+    <h2 class="title reveal">Customer favourites</h2><p class="sub" dir="rtl" style="text-align:left">الأكثر طلباً</p>
     <p class="sub reveal">Straight from our customers’ reviews.</p>
     <div class="favs">
       <div class="fav reveal"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="#1a1530" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="8" width="18" height="8" rx="4"/><path d="M7 8v8"/></svg></div><h3>Malai Boti Paratha Roll</h3><p>Creamy malai boti wrapped in a crispy paratha.</p><q>“Next level!”</q></div>
@@ -207,7 +207,7 @@
 <section id="menu">
   <div class="wrap">
     <span class="tag">Menu</span>
-    <h2 class="title reveal">Tap, add & order on WhatsApp</h2>
+    <h2 class="title reveal">Tap, add & order on WhatsApp</h2><p class="sub" dir="rtl" style="text-align:left">اختر طلبك وأرسله لنا على واتساب</p>
     <p class="sub">Choose your items, then send the order to us on WhatsApp — we'll confirm the price and time.</p>
     <div class="board" id="board"></div>
     <div class="pnote">💬 Full menu with prices coming soon. Send your order and we'll reply with the total.</div>
@@ -289,7 +289,7 @@ document.getElementById('bar').onclick=()=>{sh.classList.add('show');bg.classLis
 document.getElementById('x').onclick=close;bg.onclick=close;
 document.querySelectorAll('input[name=t]').forEach(r=>r.onchange=()=>document.getElementById('ad').style.display=document.querySelector('input[name=t]:checked').value==='Delivery'?'block':'none');
 document.getElementById('send').onclick=()=>{const v=id=>document.getElementById(id).value.trim();const t=document.querySelector('input[name=t]:checked').value;
-  let m=`Assalam o Alaikum Karachi Paratha, new order (${t}):\n\n`+Object.values(cart).map(x=>`• ${x.q} x ${x.n}`).join('\n');
+  let m=`Hello Karachi Paratha, new order (${t}):\n\n`+Object.values(cart).map(x=>`• ${x.q} x ${x.n}`).join('\n');
   if(v('nm'))m+=`\n\nName: ${v('nm')}`;if(t==='Delivery'&&v('ad'))m+=`\nAddress: ${v('ad')}`;if(v('nt'))m+=`\nNotes: ${v('nt')}`;
   track('karachiparatha-send-order'); window.open('https://wa.me/'+WA+'?text='+encodeURIComponent(m),'_blank');};
 renderMenu();renderCart();
