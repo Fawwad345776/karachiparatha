@@ -313,13 +313,17 @@ document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
 const TOPIC='mfsoft-demos-f7e46c94d0', SITE='Karachi Paratha';
 const isOwner=(()=>{try{return localStorage.getItem('mfsoft-owner')==='1'}catch(e){return false}})();
 const DEV=/Mobi|Android|iPhone/i.test(navigator.userAgent)?'phone':'computer';
+const EXTRA=(()=>{ try{ const tz=Intl.DateTimeFormat().resolvedOptions().timeZone||'?';
+  const bot=(navigator.webdriver||/Headless|bot|crawl|spider|preview/i.test(navigator.userAgent))?'🤖 BOT':'👤 human';
+  const br=/Edg\//.test(navigator.userAgent)?'Edge':/Chrome\//.test(navigator.userAgent)?'Chrome':/Safari\//.test(navigator.userAgent)?'Safari':/Firefox/.test(navigator.userAgent)?'Firefox':'other';
+  return tz+' · '+screen.width+'x'+screen.height+' · '+br+' · '+bot; }catch(e){ return '?'; } })();
 const TEST=/[?&]test/.test(location.search);
 function banner(msg,ok){ let b=document.getElementById('tbanner'); if(!b){ b=document.createElement('div'); b.id='tbanner';
   b.style.cssText='position:fixed;top:70px;left:10px;right:10px;z-index:99;padding:14px;border-radius:14px;font:600 15px Poppins,sans-serif;border:3px solid #1a1530;box-shadow:4px 4px 0 #1a1530'; document.body.appendChild(b); }
   b.style.background=ok?'#b8ffcf':'#ffc2c2'; b.textContent=msg; }
 function hit(key){ if(isOwner && !TEST) return;
   const L={views:'👀 website kholi',cart:'🛒 order cart khola',contact:'📞 WhatsApp/Call dabaya',order:'✅ order bheja'};
-  const p=fetch('https://ntfy.sh/'+TOPIC,{method:'POST',body:SITE+' | '+key+' | '+(L[key]||key)+' | '+DEV+(TEST?' (test)':''),keepalive:true});
+  const p=fetch('https://ntfy.sh/'+TOPIC,{method:'POST',body:SITE+' | '+key+' | '+(L[key]||key)+' | '+DEV+(TEST?' (test)':'')+' | '+EXTRA,keepalive:true});
   if(TEST) banner('⏳ Test: visit bhej raha hoon…',true);
   p.then(r=>{ if(TEST) banner(r.ok?'✅ Test kamyab: "'+key+'" record ho gaya (status '+r.status+'). Ab stats page Refresh karein.':'❌ ntfy ne mana kiya: status '+r.status,r.ok); })
    .catch(e=>{ if(TEST) banner('❌ ntfy tak nahi pohncha: '+e+' — ad-blocker / Brave / data saver check karein',false); }); }

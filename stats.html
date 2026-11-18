@@ -58,7 +58,7 @@ async function load(){
   }catch(e){ diag='ntfy: ❌ raabta nahi hua · '+e; }
   document.getElementById('diag').textContent=diag;
   document.getElementById('list').innerHTML=SITES.map(s=>{
-    const mine=evs.map(e=>{const p=e.message.split(' | ');const test=/\(test\)/.test(e.message);return {site:p[0],key:p[1],label:(test?'🧪 test · ':'')+p[2],dev:(p[3]||'').replace(' (test)',''),time:e.time,test};}).filter(x=>x.site===s.name);
+    const mine=evs.map(e=>{const p=e.message.split(' | ');const test=/\(test\)/.test(e.message);return {site:p[0],key:p[1],label:(test?'🧪 test · ':'')+p[2],dev:(p[3]||'').replace(' (test)','')+(p[4]?'<br><small style="color:#8a90b5">'+p[4]+'</small>':''),time:e.time,test};}).filter(x=>x.site===s.name);
     const c=k=>mine.filter(x=>x.key===k&&!x.test).length;
     const views=c('views');
     return `<div class="card"><div class="top"><h2>${s.title}</h2><a href="${s.url}" target="_blank" rel="noopener">site ↗</a></div>
