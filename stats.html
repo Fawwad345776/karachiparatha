@@ -48,6 +48,16 @@ const TOPIC='mfsoft-demos-f7e46c94d0';
 const SITES=[{name:'Taj Mahal Mangaf',title:'Taj Mahal – Mangaf',url:'https://fawwad345776.github.io/tajmahal/'},{name:'Karachi Paratha',title:'Karachi Paratha – Salmiya',url:'https://fawwad345776.github.io/karachiparatha/'},{name:'Kalian Doha',title:'Kalian – Tawar Mall, Doha',url:'https://fawwad345776.github.io/kalian/'}];
 const K=[['views','Views','v'],['cart','Cart','c'],['contact','Contact','t'],['order','Orders','o']];
 function ago(sec){ const s=Date.now()/1000-sec; if(s<60) return 'abhi'; if(s<3600) return Math.floor(s/60)+' min pehle'; if(s<86400) return Math.floor(s/3600)+' ghante pehle'; return Math.floor(s/86400)+' din pehle'; }
+function classify(dev,extra){
+  // extra = "timezone · WxH · browser · human/BOT"
+  const [tz,res]=extra.split(' · '); const w=parseInt(res)||0;
+  if(/BOT/.test(extra)) return 'bot';
+  if(!tz||!/^Asia\//.test(tz)) return 'bot';            // UTC, Etc/Unknown, Europe/... = servers/scanners
+  if(/phone/.test(dev)&&w>=1000) return 'bot';           // "phone" with desktop screen = fake
+  if(/^(800x600|1024x768)$/.test(res||'')) return 'bot';
+  if(tz==='Asia/Karachi') return 'pk';                   // Gulf demos: Pakistan visits = aap khud
+  return 'real';
+}
 async function load(){
   let evs=[], diag='';
   try{
@@ -58,12 +68,14 @@ async function load(){
   }catch(e){ diag='ntfy: ❌ raabta nahi hua · '+e; }
   document.getElementById('diag').textContent=diag;
   document.getElementById('list').innerHTML=SITES.map(s=>{
-    const mine=evs.map(e=>{const p=e.message.split(' | ');const test=/\(test\)/.test(e.message);return {site:p[0],key:p[1],label:(test?'🧪 test · ':'')+p[2],dev:(p[3]||'').replace(' (test)','')+(p[4]?'<br><small style="color:#8a90b5">'+p[4]+'</small>':''),time:e.time,test};}).filter(x=>x.site===s.name);
-    const c=k=>mine.filter(x=>x.key===k&&!x.test).length;
+    const mine=evs.map(e=>{const p=e.message.split(' | ');const test=/\(test\)/.test(e.message);const kind=classify(p[3]||'',p[4]||'');
+      return {site:p[0],key:p[1],label:(test?'🧪 test · ':'')+(kind==='bot'?'🤖 ':kind==='pk'?'🇵🇰 ':'')+p[2],dev:(p[3]||'').replace(' (test)','')+(p[4]?'<br><small style="color:#8a90b5">'+p[4]+(kind==='bot'?' → <b style="color:#ff8a8a">bot/scanner, count nahi hua</b>':kind==='pk'?' → <b style="color:#ffd36b">Pakistan se (shayad aap), count nahi hua</b>':'')+'</small>':''),time:e.time,test,kind};}).filter(x=>x.site===s.name);
+    const c=k=>mine.filter(x=>x.key===k&&!x.test&&x.kind==='real').length;
+    const bots=mine.filter(x=>x.kind!=='real'&&!x.test).length;
     const views=c('views');
     return `<div class="card"><div class="top"><h2>${s.title}</h2><a href="${s.url}" target="_blank" rel="noopener">site ↗</a></div>
       <div class="grid">${K.map(k=>`<div class="m ${k[2]}"><b>${c(k[0])}</b><span>${k[1]}</span></div>`).join('')}</div>
-      <div class="st ${views?'yes':'no'}">${views?'👀 Website kholi gayi hai!':'⏳ Abhi tak kisi ne nahi kholi'}</div>
+      <div class="st ${views?'yes':'no'}">${views?'👀 Asli insaan ne website kholi hai!':'⏳ Abhi tak kisi asli customer ne nahi kholi'}</div>${bots?`<div style="color:#8a90b5;font-size:.85rem;margin:-4px 0 8px">🤖 ${bots} bot/scanner ya aap ke apne visits — gine nahi gaye</div>`:''}
       <div class="ev">${mine.slice().reverse().map(x=>`<div class="e"><span>${x.label} · ${x.dev||''}</span><small>${ago(x.time)}</small></div>`).join('')}</div></div>`;
   }).join('');
 }
